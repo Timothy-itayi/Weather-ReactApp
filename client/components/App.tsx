@@ -1,35 +1,41 @@
-import { useState, useEffect } from 'react'
-import { getGreeting } from '../apiClient'
+import React, { useState, useEffect } from 'react'
+import { fetchWeatherData } from '../apiWeather'
 
-const App = () => {
-  const [greeting, setGreeting] = useState('')
-  const [count, setCount] = useState(0)
-  const [isError, setIsError] = useState(false)
+function App() {
+  const [weatherData, setWeatherData] = useState<any>(null)
 
   useEffect(() => {
-    getGreeting()
-      .then((greeting) => {
-        console.log(greeting)
-        setGreeting(greeting)
-        setIsError(false)
+    // Fetch weather data based on latitude and longitude
+    const latitude = 37.7749
+    const longitude = -122.4194
+
+    fetchWeatherData(latitude, longitude)
+      .then((data: any) => {
+        // Update weather data state
+        setWeatherData(data)
+        console.log('Weather Data:', data)
       })
-      .catch((err) => {
-        console.log(err)
-        setIsError(true)
+      .catch((error: any) => {
+        console.error('Error fetching weather data:', error)
       })
-  }, [count])
+  }, [])
 
   return (
-    <>
-      {count}
-      <h1>{greeting}</h1>
-      {isError && (
-        <p style={{ color: 'red' }}>
-          There was an error retrieving the greeting.
-        </p>
-      )}
-      <button onClick={() => setCount(count + 1)}>Click</button>
-    </>
+    <div>
+      <div>
+        {/* Display Weather Data */}
+        {weatherData && (
+          <ul>
+            <li>Current Weather: {weatherData.current_weather}</li>
+            <li>Temperature Unit: {weatherData.temperature_unit}</li>
+            <li>Wind Speed Unit: {weatherData.windspeed_unit}</li>
+            <li>Precipitation Unit: {weatherData.precipitation_unit}</li>
+            <li>Time Format: {weatherData.timeformat}</li>
+            <li>Timezone: {weatherData.timezone}</li>
+          </ul>
+        )}
+      </div>
+    </div>
   )
 }
 

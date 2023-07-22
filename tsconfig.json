@@ -1,8 +1,4 @@
 {
-  "ts-node": {
-    "transpileOnly": true
-  },
-
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
     /* Projects */
@@ -19,8 +15,9 @@
     "allowJs": true,
 
     /* Type Checking */
-    "strict": true /* Enable all strict
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */,
+    "strict": true /* Enable all strict checks. */,
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "noEmit": true
-  }
+  },
+  "include": ["client/**/*.ts", "client/**/*.tsx"]
 }
