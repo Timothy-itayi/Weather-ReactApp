@@ -1,50 +1,39 @@
 import React, { useState, useEffect } from 'react'
-import { fetchSpecies } from '../StarWars'
+import { fetchWeatherData } from '../apiWeather'
 
 function App() {
-  interface SpeciesData {
-    name: string
-    classification: string
-    designation: string
-    language: string
-  }
-
-  const [speciesData, setSpeciesData] = useState<SpeciesData>({
-    name: '',
-    classification: '',
-    designation: '',
-    language: '',
-  })
+  const [weatherData, setWeatherData] = useState<any>(null)
 
   useEffect(() => {
-    loadSpecies()
+    // Fetch weather data based on latitude and longitude
+    const latitude = 37.7749
+    const longitude = -122.4194
+
+    fetchWeatherData(latitude, longitude)
+      .then((data: any) => {
+        // Update weather data state
+        setWeatherData(data)
+        console.log('Weather Data:', data)
+      })
+      .catch((error: any) => {
+        console.error('Error fetching weather data:', error)
+      })
   }, [])
-
-  async function loadSpecies() {
-    try {
-      const creature = await fetchSpecies()
-
-      // Extract the first 4 items from the 'creature' object and update the state
-      const { name, classification, designation, language } = creature
-      setSpeciesData({ name, classification, designation, language })
-
-      console.log(speciesData)
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
   return (
     <div>
       <div>
-        {/* Load a Species */}
-        <button onClick={loadSpecies}>Load Species</button>
-        <ul>
-          <li>Name: {speciesData.name}</li>
-          <li>Class: {speciesData.classification}</li>
-          <li>Designation: {speciesData.designation}</li>
-          <li>Language: {speciesData.language}</li>
-        </ul>
+        {/* Display Weather Data */}
+        {weatherData && (
+          <ul>
+            <li>Current Weather: {weatherData.current_weather}</li>
+            <li>Temperature Unit: {weatherData.temperature_unit}</li>
+            <li>Wind Speed Unit: {weatherData.windspeed_unit}</li>
+            <li>Precipitation Unit: {weatherData.precipitation_unit}</li>
+            <li>Time Format: {weatherData.timeformat}</li>
+            <li>Timezone: {weatherData.timezone}</li>
+          </ul>
+        )}
       </div>
     </div>
   )
