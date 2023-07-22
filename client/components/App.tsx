@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { fetchWeatherData } from '../apiWeather'
+import { WeatherData } from './types'
 
 function App() {
-  const [weatherData, setWeatherData] = useState<any>(null)
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
 
   useEffect(() => {
     // Fetch weather data based on latitude and longitude
@@ -10,12 +11,11 @@ function App() {
     const longitude = -122.4194
 
     fetchWeatherData(latitude, longitude)
-      .then((data: any) => {
+      .then((data) => {
         // Update weather data state
         setWeatherData(data)
-        console.log('Weather Data:', data)
       })
-      .catch((error: any) => {
+      .catch((error) => {
         console.error('Error fetching weather data:', error)
       })
   }, [])
@@ -25,14 +25,24 @@ function App() {
       <div>
         {/* Display Weather Data */}
         {weatherData && (
-          <ul>
-            <li>Current Weather: {weatherData.current_weather}</li>
-            <li>Temperature Unit: {weatherData.temperature_unit}</li>
-            <li>Wind Speed Unit: {weatherData.windspeed_unit}</li>
-            <li>Precipitation Unit: {weatherData.precipitation_unit}</li>
-            <li>Time Format: {weatherData.timeformat}</li>
-            <li>Timezone: {weatherData.timezone}</li>
-          </ul>
+          <div>
+            <h1>Current Weather</h1>
+            <p>Time: {weatherData.current_weather.time}</p>
+            <p>Temperature: {weatherData.current_weather.temperature} °C</p>
+            <p>Weather Code: {weatherData.current_weather.weathercode}</p>
+            <p>Wind Speed: {weatherData.current_weather.windspeed} km/h</p>
+            <p>Wind Direction: {weatherData.current_weather.winddirection}°</p>
+
+            <h1>Hourly Forecast</h1>
+            {weatherData.hourly.time.map((time, index) => (
+              <div key={index}>
+                <p>Time: {time}</p>
+                <p>
+                  Temperature: {weatherData.hourly.temperature_2m[index]} °C
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
