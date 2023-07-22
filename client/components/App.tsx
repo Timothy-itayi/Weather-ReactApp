@@ -1,35 +1,52 @@
-import { useState, useEffect } from 'react'
-import { getGreeting } from '../apiClient'
+import React, { useState, useEffect } from 'react'
+import { fetchSpecies } from '../StarWars'
 
-const App = () => {
-  const [greeting, setGreeting] = useState('')
-  const [count, setCount] = useState(0)
-  const [isError, setIsError] = useState(false)
+function App() {
+  interface SpeciesData {
+    name: string
+    classification: string
+    designation: string
+    language: string
+  }
+
+  const [speciesData, setSpeciesData] = useState<SpeciesData>({
+    name: '',
+    classification: '',
+    designation: '',
+    language: '',
+  })
 
   useEffect(() => {
-    getGreeting()
-      .then((greeting) => {
-        console.log(greeting)
-        setGreeting(greeting)
-        setIsError(false)
-      })
-      .catch((err) => {
-        console.log(err)
-        setIsError(true)
-      })
-  }, [count])
+    loadSpecies()
+  }, [])
+
+  async function loadSpecies() {
+    try {
+      const creature = await fetchSpecies()
+
+      // Extract the first 4 items from the 'creature' object and update the state
+      const { name, classification, designation, language } = creature
+      setSpeciesData({ name, classification, designation, language })
+
+      console.log(speciesData)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
-    <>
-      {count}
-      <h1>{greeting}</h1>
-      {isError && (
-        <p style={{ color: 'red' }}>
-          There was an error retrieving the greeting.
-        </p>
-      )}
-      <button onClick={() => setCount(count + 1)}>Click</button>
-    </>
+    <div>
+      <div>
+        {/* Load a Species */}
+        <button onClick={loadSpecies}>Load Species</button>
+        <ul>
+          <li>Name: {speciesData.name}</li>
+          <li>Class: {speciesData.classification}</li>
+          <li>Designation: {speciesData.designation}</li>
+          <li>Language: {speciesData.language}</li>
+        </ul>
+      </div>
+    </div>
   )
 }
 
