@@ -1,18 +1,14 @@
-const apiUrl = 'https://api.open-meteo.com/v1/gem'
+const apiUrl = 'https://api.open-meteo.com/v1/forecast'
 
 interface WeatherData {
-  current_weather: {
-    time: string
-    temperature: number
-    weathercode: number
-    windspeed: number
-    winddirection: number
-  }
-  temperature_unit: string
-  windspeed_unit: string
-  precipitation_unit: string
-  timeformat: string
+  latitude: number
+  longitude: number
+  generationtime_ms: number
+  utc_offset_seconds: number
   timezone: string
+  timezone_abbreviation: string
+  elevation: number
+  // Add any other properties you need from the response here
 }
 
 export async function fetchWeatherData(
@@ -20,20 +16,9 @@ export async function fetchWeatherData(
   longitude: number
 ): Promise<WeatherData> {
   try {
-    const queryParams = [
-      'current_weather=true',
-      'temperature_unit=celsius',
-      'windspeed_unit=kmh',
-      'precipitation_unit=mm',
-      'timeformat=iso8601',
-      'timezone=GMT',
-    ]
+    const queryParams = ['latitude=' + latitude, 'longitude=' + longitude]
 
-    const response = await fetch(
-      `${apiUrl}?latitude=${latitude}&longitude=${longitude}&${queryParams.join(
-        '&'
-      )}`
-    )
+    const response = await fetch(`${apiUrl}?${queryParams.join('&')}`)
 
     if (!response.ok) {
       throw new Error(
@@ -44,20 +29,15 @@ export async function fetchWeatherData(
     const data = await response.json()
 
     // Extract the desired keys and return them
-    const currentWeather = data?.current_weather
-    const temperatureUnit = data?.temperature_unit
-    const windSpeedUnit = data?.windspeed_unit
-    const precipitationUnit = data?.precipitation_unit
-    const timeFormat = data?.timeformat
-    const timezone = data?.timezone
-
     const weatherData: WeatherData = {
-      current_weather: currentWeather,
-      temperature_unit: temperatureUnit,
-      windspeed_unit: windSpeedUnit,
-      precipitation_unit: precipitationUnit,
-      timeformat: timeFormat,
-      timezone: timezone,
+      latitude: data?.latitude,
+      longitude: data?.longitude,
+      generationtime_ms: data?.generationtime_ms,
+      utc_offset_seconds: data?.utc_offset_seconds,
+      timezone: data?.timezone,
+      timezone_abbreviation: data?.timezone_abbreviation,
+      elevation: data?.elevation,
+      // Add any other properties you need from the response here
     }
 
     return weatherData
